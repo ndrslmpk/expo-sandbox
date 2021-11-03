@@ -40,7 +40,7 @@ export default function App() {
         <TextInput
           style={styles.textInput}
           placeholder='Search data'
-          placeholderTextColor='#000'
+          placeholderTextColor='#dcdcdc"'
         />
 
         <View>
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    marginVertical: 20,
   },
   logo: {
     width: 360,
@@ -103,8 +104,8 @@ const styles = StyleSheet.create({
     backgroundColor: "",
     borderStyle: "solid",
     borderWidth: 1,
-    padding: 5,
-    borderRadius: 5,
+    padding: 2,
+    borderRadius: 2,
     textAlign: "center",
   },
 });
