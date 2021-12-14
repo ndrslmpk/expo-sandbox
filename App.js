@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -12,6 +13,10 @@ import { Post } from "./components/Post";
 export default function App() {
   const [data, setData] = useState([]);
   const [isloading, setIsloading] = useState(true);
+  const [issearching, setIssearching] = useState(false);
+  const searchOn = () => setIssearching(true);
+  const searchOff = () => setIssearching(false);
+  const [searchvalue, setSearchvalue] = useState(0);
   const _URL = "https://jsonplaceholder.typicode.com/posts";
 
   const getData = async () => {
@@ -21,12 +26,12 @@ export default function App() {
       let element = _data[index];
       setData((prevState) => [...prevState, { element }]);
     }
-    setIsloading(false);
+    if (isloading === true) setIsloading(false);
   };
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [issearching]);
 
   if (isloading) {
     return (
@@ -39,16 +44,50 @@ export default function App() {
       <View style={styles.container}>
         <TextInput
           style={styles.textInput}
-          placeholder='Search data'
+          placeholder='Search data by ID'
           placeholderTextColor='#dcdcdc"'
+          maxLength='5'
+          onPressIn={() => {
+            console.log(issearching);
+            setIssearching(({ prevState } = true));
+          }}
+          onSubmitEditing={(search) => {
+            console.log("Are we searching?");
+            console.log(issearching);
+            console.log("Searchvalue");
+            console.log(search);
+            console.log(search.target.value);
+            console.log({ search });
+            setSearchvalue(search.target.value);
+          }}
+          onEndEditing={() => {
+            console.log(issearching);
+            setIssearching(false);
+          }}
         />
 
         <View>
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.element.id}
+            renderItem={({ item }) => <Text>{item.element.title}</Text>}
+          />
           <Text style={styles.heading}>Data:</Text>
-          {data && !isloading ? (
+          {data && !isloading && !issearching ? (
             data.map((item) => {
+              console.log(issearching);
               return <Post key={item.element.id} data={item.element} />;
             })
+          ) : data && !isloading && issearching ? (
+            data
+              .filter((item) => {
+                console.log("item is");
+                console.log(item);
+                return item.element.id == searchvalue;
+              })
+              .map((item) => {
+                return <Post key={item.element.id} data={item.element} />;
+              })
           ) : (
             <Text>No data here.</Text>
           )}
