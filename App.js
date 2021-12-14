@@ -16,7 +16,7 @@ export default function App() {
   const [issearching, setIssearching] = useState(false);
   const searchOn = () => setIssearching(true);
   const searchOff = () => setIssearching(false);
-  const [searchvalue, setSearchvalue] = useState(0);
+  const [filter, setFilter] = useState("");
   const _URL = "https://jsonplaceholder.typicode.com/posts";
 
   const getData = async () => {
@@ -43,63 +43,35 @@ export default function App() {
     return (
       <View style={styles.container}>
         <TextInput
+          autoCapitalize='none'
           style={styles.textInput}
           placeholder='Search data by ID'
-          placeholderTextColor='#dcdcdc"'
           maxLength='5'
-          onPressIn={() => {
-            console.log(issearching);
-            setIssearching(({ prevState } = true));
-          }}
-          onSubmitEditing={(search) => {
-            console.log("Are we searching?");
-            console.log(issearching);
-            console.log("Searchvalue");
-            console.log(search);
-            console.log(search.target.value);
-            console.log({ search });
-            setSearchvalue(search.target.value);
-          }}
-          onEndEditing={() => {
-            console.log(issearching);
-            setIssearching(false);
-          }}
+          onChangeText={(text) => setFilter(text)}
+          value={filter}
         />
 
         <View>
-          <FlatList
-            data={data}
-            keyExtractor={(item) => item.element.id}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            renderItem={({ item }) => (
-              <View style={styles.listElement}>
-                <Text>
-                  {item.element.title} ({item.element.id})
-                </Text>
-                <Text>></Text>
-              </View>
-            )}
-          />
           <Text style={styles.heading}>Data:</Text>
-          {data && !isloading && !issearching ? (
-            data.map((item) => {
-              console.log(issearching);
-              return <Post key={item.element.id} data={item.element} />;
-            })
-          ) : data && !isloading && issearching ? (
-            data
-              .filter((item) => {
-                console.log("item is");
-                console.log(item);
-                return item.element.id == searchvalue;
-              })
-              .map((item) => {
-                return <Post key={item.element.id} data={item.element} />;
-              })
+          {data ? (
+            <FlatList
+              data={data.filter((item) => {
+                return item.element.id.toString().includes(filter);
+              })}
+              keyExtractor={(item) => item.element.id}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              renderItem={({ item }) => (
+                <View style={styles.listElement}>
+                  <Text>
+                    {item.element.title} ({item.element.id})
+                  </Text>
+                  <Text>></Text>
+                </View>
+              )}
+            />
           ) : (
             <Text>No data here.</Text>
           )}
-          {data.map((item) => console.log(item.element))}
         </View>
 
         {/* Button test */}
@@ -129,13 +101,13 @@ const styles = StyleSheet.create({
   heading: {
     color: "#888",
     fontSize: 24,
+    fontWeight: "bold",
   },
   listElement: {
     color: "#000",
     fontSize: 12,
     textAlign: "center",
     marginVertical: 2,
-    backgroundColor: "#f2f2f2",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
