@@ -70,7 +70,15 @@ export default function App() {
           <FlatList
             data={data}
             keyExtractor={(item) => item.element.id}
-            renderItem={({ item }) => <Text>{item.element.title}</Text>}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            renderItem={({ item }) => (
+              <View style={styles.listElement}>
+                <Text>
+                  {item.element.title} ({item.element.id})
+                </Text>
+                <Text>></Text>
+              </View>
+            )}
           />
           <Text style={styles.heading}>Data:</Text>
           {data && !isloading && !issearching ? (
@@ -128,6 +136,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 2,
     backgroundColor: "#f2f2f2",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   button: {
     backgroundColor: "blue",
@@ -146,5 +157,10 @@ const styles = StyleSheet.create({
     padding: 2,
     borderRadius: 2,
     textAlign: "center",
+  },
+  separator: {
+    height: 1,
+    borderTopWidth: 1,
+    borderTopColor: "darkgrey",
   },
 });
