@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
+  Modal,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -12,11 +15,12 @@ import { Post } from "./components/Post";
 
 export default function App() {
   const [data, setData] = useState([]);
+  const [filter, setFilter] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const [isloading, setIsloading] = useState(true);
   const [issearching, setIssearching] = useState(false);
   const searchOn = () => setIssearching(true);
   const searchOff = () => setIssearching(false);
-  const [filter, setFilter] = useState("");
   const _URL = "https://jsonplaceholder.typicode.com/posts";
 
   const getData = async () => {
@@ -42,6 +46,29 @@ export default function App() {
   } else {
     return (
       <View style={styles.container}>
+        <Modal
+          animationType='slide'
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Hello World!</Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Close Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+          <Text style={styles.heading}>Data:</Text>
+        </Modal>
+
         <TextInput
           autoCapitalize='none'
           style={styles.textInput}
@@ -61,26 +88,20 @@ export default function App() {
               keyExtractor={(item) => item.element.id}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
               renderItem={({ item }) => (
-                <View style={styles.listElement}>
-                  <Text>
-                    {item.element.title} ({item.element.id})
-                  </Text>
-                  <Text>></Text>
-                </View>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <View style={styles.listElement}>
+                    <Text>
+                      {item.element.title} ({item.element.id})
+                    </Text>
+                    <Text>></Text>
+                  </View>
+                </TouchableOpacity>
               )}
             />
           ) : (
             <Text>No data here.</Text>
           )}
         </View>
-
-        {/* Button test */}
-        <TouchableOpacity
-          onPress={() => alert("Hello World")}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Pick a photo</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -113,9 +134,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   button: {
-    backgroundColor: "blue",
+    backgroundColor: "#2BFEBB",
     padding: 10,
     borderRadius: 15,
+    elevation: 2,
   },
   buttonText: {
     fontSize: 16,
@@ -134,5 +156,32 @@ const styles = StyleSheet.create({
     height: 1,
     borderTopWidth: 1,
     borderTopColor: "darkgrey",
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
