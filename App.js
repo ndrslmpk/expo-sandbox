@@ -11,17 +11,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Post } from "./components/Post";
 
 export default function App() {
+  const _URL = "https://jsonplaceholder.typicode.com/posts";
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [isloading, setIsloading] = useState(true);
-  const [issearching, setIssearching] = useState(false);
-  const searchOn = () => setIssearching(true);
-  const searchOff = () => setIssearching(false);
-  const _URL = "https://jsonplaceholder.typicode.com/posts";
+  const [tempData, setTempData] = useState({
+    id: "",
+    title: "",
+    userId: "",
+    body: "",
+  });
 
   const getData = async () => {
     const resp = await fetch(_URL);
@@ -31,11 +33,12 @@ export default function App() {
       setData((prevState) => [...prevState, { element }]);
     }
     if (isloading === true) setIsloading(false);
+    console.log(_data);
   };
 
   useEffect(() => {
     getData();
-  }, [issearching]);
+  }, []);
 
   if (isloading) {
     return (
@@ -46,27 +49,39 @@ export default function App() {
   } else {
     return (
       <View style={styles.container}>
-        <Modal
-          animationType='slide'
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-        >
+        <Modal animationType='slide' transparent={true} visible={modalVisible}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
+              {console.log(tempData)}
+              <Text style={styles.modalText}>
+                Hello, here are your details !
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Id: </Text>
+                <Text>{tempData.id}</Text>
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Title: </Text>
+                <Text>{tempData.title}</Text>
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>User Id: </Text>
+                <Text>{tempData.userId}</Text>
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Body: </Text>
+                <Text>{tempData.body}</Text>
+              </Text>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                }}
               >
                 <Text style={styles.textStyle}>Close Modal</Text>
               </Pressable>
             </View>
           </View>
-          <Text style={styles.heading}>Data:</Text>
         </Modal>
 
         <TextInput
@@ -88,7 +103,15 @@ export default function App() {
               keyExtractor={(item) => item.element.id}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <TouchableOpacity
+                  onPress={() => {
+                    tempData.id = item.element.id;
+                    tempData.title = item.element.title;
+                    tempData.userId = item.element.userId;
+                    tempData.body = item.element.body;
+                    setModalVisible(true);
+                  }}
+                >
                   <View style={styles.listElement}>
                     <Text>
                       {item.element.title} ({item.element.id})
@@ -120,9 +143,11 @@ const styles = StyleSheet.create({
     height: 240,
   },
   heading: {
-    color: "#888",
+    color: "#2BFEBB",
     fontSize: 24,
     fontWeight: "bold",
+    textAlign: "center",
+    borderBottomWidth: 1,
   },
   listElement: {
     color: "#000",
@@ -178,6 +203,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+
+  boldText: {
+    fontWeight: 900,
   },
 
   modalText: {
